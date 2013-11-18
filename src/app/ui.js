@@ -31,7 +31,7 @@ $(function () {
 			for (i = 0; i < duplicate.length; i++) {
 				$duplicateEntry = $('<tr></tr>');
 				$addressCell = $('<td></td>');
-				$addressCell.text(duplicate[i].address.value);
+				$addressCell.text(duplicate[i].address.filtered);
 				$duplicateEntry.append($addressCell);
 				$duplicateEntries.append($duplicateEntry);
 			}

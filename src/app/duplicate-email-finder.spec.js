@@ -4,28 +4,32 @@ describe('Address parser', function (){
 
 	it('Returns the same address', function () {
 		var address = duplicateEmails.parseAddress(testAddress);
-		expect(address.value).toBe(testAddress);
+		expect(address.filtered).toBe(testAddress);
+		expect(address.original).toBe(testAddress);
 		expect(address.valid).toBeTruthy();
 	});
 
 	it('Trims the address', function () {
 		var nonTrimmedAddress = ' 	  test@example.com	    	',
 			address = duplicateEmails.parseAddress(nonTrimmedAddress);
-		expect(address.value).toBe(testAddress);
+		expect(address.filtered).toBe(testAddress);
+		expect(address.original).toBe(testAddress);
 		expect(address.valid).toBeTruthy();
 	});
 
 	it('Ignores dots, spaces and everything after plus', function () {
 		var nonFilteredAddress = ' 	  t...e.s.t+oth.er@example.com	    	',
 			address = duplicateEmails.parseAddress(nonFilteredAddress);
-		expect(address.value).toBe(testAddress);
+		expect(address.filtered).toBe(testAddress);
+		expect(address.original).toBe(nonFilteredAddress.trim());
 		expect(address.valid).toBeTruthy();
 	});
 
 	it('Returns address invalid', function () {
 		var invalidAddress = 'BROKEN',
 			address = duplicateEmails.parseAddress(invalidAddress);
-		expect(address.value).toBe(invalidAddress);
+		expect(address.filtered).toBe(invalidAddress);
+		expect(address.original).toBe(invalidAddress);
 		expect(address.valid).toBeFalsy();
 	});
 });
@@ -73,7 +77,7 @@ describe('Input Line parser', function () {
 	it('Returns the split address and fields', function () {
 		var testInputLine = 'te.s.t.+test@example.com	field-c1	field-c2';
 		var inputs = duplicateEmails.parseInputLine(testInputLine);
-		expect(inputs.address.value).toBe(testAddress);
+		expect(inputs.address.filtered).toBe(testAddress);
 		expect(inputs.fields[0]).toBe(testField1);
 		expect(inputs.fields[1]).toBe(testField2);
 	});
@@ -81,7 +85,7 @@ describe('Input Line parser', function () {
 	it('Parses data with may spaces and tabs', function () {
 		var testInputLine = '   	 te.s.t.+test@example.com		   	field-c1  	   field-c2  ';
 		var inputs = duplicateEmails.parseInputLine(testInputLine);
-		expect(inputs.address.value).toBe(testAddress);
+		expect(inputs.address.filtered).toBe(testAddress);
 		expect(inputs.fields[0]).toBe(testField1);
 		expect(inputs.fields[1]).toBe(testField2);
 	});
@@ -89,7 +93,7 @@ describe('Input Line parser', function () {
 	it('Parses data with single field', function () {
 		var testInputLine = 'te.s.t.+test@example.com field-c1';
 		var inputs = duplicateEmails.parseInputLine(testInputLine);
-		expect(inputs.address.value).toBe(testAddress);
+		expect(inputs.address.filtered).toBe(testAddress);
 		expect(inputs.fields[0]).toBe(testField1);
 		expect(inputs.fields.length).toBe(1);
 	});
@@ -97,14 +101,14 @@ describe('Input Line parser', function () {
 	it('Parses data without field', function () {
 		var testInputLine = 'te.s.t.+test@example.com';
 		var inputs = duplicateEmails.parseInputLine(testInputLine);
-		expect(inputs.address.value).toBe(testAddress);
+		expect(inputs.address.filtered).toBe(testAddress);
 		expect(inputs.fields.length).toBe(0);
 	});
 
 	it('Parses empty data', function () {
 		var testInputLine = '    ';
 		var inputs = duplicateEmails.parseInputLine(testInputLine);
-		expect(inputs.address.value).toBe('');
+		expect(inputs.address.filtered).toBe('');
 		expect(inputs.address.valid).toBeFalsy();
 		expect(inputs.fields.length).toBe(0);
 	});
@@ -196,7 +200,7 @@ describe('Input parser', function () {
 
 	it('Parses input lines', function () {
 		var inputLines = duplicateEmails.parseInputText(inputText);
-		expect(inputLines[0].address.value).toBe(testAddress);
+		expect(inputLines[0].address.filtered).toBe(testAddress);
 		expect(inputLines[0].address.valid).toBe(true);
 	});
 });
@@ -214,8 +218,11 @@ describe('Duplicate email finder', function () {
 		var duplicates = duplicateEmails.find(inputText);
 		expect(Object.keys(duplicates).length).toBe(2);
 		expect(duplicates[testAddress].length).toBe(3);
-		expect(duplicates[testAddress][0].address.value).toBe(testAddress);
-		expect(duplicates[testAddress][1].address.value).toBe(testAddress);
-		expect(duplicates[testAddress][2].address.value).toBe(testAddress);
+		expect(duplicates[testAddress][0].address.filtered).toBe(testAddress);
+		expect(duplicates[testAddress][0].address.original).toBe('test@example.com');
+		expect(duplicates[testAddress][1].address.filtered).toBe(testAddress);
+		expect(duplicates[testAddress][1].address.original).toBe('t.est@example.com');
+		expect(duplicates[testAddress][2].address.filtered).toBe(testAddress);
+		expect(duplicates[testAddress][2].address.original).toBe('tes.t+other@example.com');
 	});
 });

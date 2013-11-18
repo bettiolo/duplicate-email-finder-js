@@ -9,7 +9,7 @@ var duplicateEmails = (function() {
 
 			for (i = 0; i < entries.length; i++) {
 				var entry = entries[i],
-					address = entry.address.value;
+					address = entry.address.filtered;
 				if (!duplicates[address]) {
 					duplicates[address] = [];
 				}
@@ -61,8 +61,9 @@ var duplicateEmails = (function() {
 			var valid = (localPart ? true : false) && (domainPart ? true : false);
 			var filteredAddress = valid ? (localPart + '@' + domainPart) : trimmedAddress;
 			return {
-				valid : valid,
-				value : filteredAddress
+				valid: valid,
+				filtered: filteredAddress,
+				original: trimmedAddress
 			};
 		},
 		getLocalPart: function (address) {
