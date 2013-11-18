@@ -74,13 +74,17 @@ $(function () {
 			$separator = $('<tr><td colspan="' + (maxFieldCount + 1) + '">&nbsp;</td></tr>'),
 			i;
 
-		$duplicateItem.text(address + ' (' + duplicate.length + ')');
-		$duplicateRow.append($duplicateItem);
-		$duplicate.append($duplicateRow);
-		for (i = 0; i < duplicate.length; i++) {
-			$duplicate.append(renderDuplicateEntries(duplicate[i]));
+		if (duplicate.length == 1) {
+			$duplicate.append(renderDuplicateEntries(duplicate[0]));
+		} else {
+			$duplicateItem.text(address + ' (' + duplicate.length + ')');
+			$duplicateRow.append($duplicateItem);
+			$duplicate.append($duplicateRow);
+			for (i = 0; i < duplicate.length; i++) {
+				$duplicate.append(renderDuplicateEntries(duplicate[i]));
+			}
+			$duplicate.append($separator);
 		}
-		$duplicate.append($separator);
 		return $duplicate;
 	}
 
