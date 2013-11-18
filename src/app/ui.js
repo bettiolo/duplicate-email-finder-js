@@ -34,23 +34,28 @@ $(function () {
 			duplicate,
 			duplicateIndex,
 			entry,
-			entryIndex,
-			fieldIndex;
+			entryIndex;
 
 		for (duplicateIndex = 0; duplicateIndex < duplicateAddresses.length; duplicateIndex++) {
 			duplicate = duplicates[duplicateAddresses[duplicateIndex]];
 			for (entryIndex = 0; entryIndex < duplicate.length; entryIndex++) {
 				entry = duplicate[entryIndex];
-				fieldCount = 1; // address
-				for (fieldIndex = 0; fieldIndex < entry.fields.length; fieldIndex++) {
-					fieldCount ++;
-				}
+				fieldCount = entry.fields.length + 1; // address
 				if (fieldCount > maxFieldCount) {
 					maxFieldCount = fieldCount;
 				}
 			}
 		}
 		return maxFieldCount;
+	}
+
+	function getIds(duplicate) {
+		var ids = [],
+			i;
+		for (i = 0; i < duplicate.length; i++) {
+			ids.push(duplicate[i].fields[0]);
+		}
+		return ids;
 	}
 
 	function renderDuplicates(duplicates, addressIndex, maxFieldCount, $output, matcher) {
@@ -72,6 +77,8 @@ $(function () {
 		var $duplicate = $('<tbody></tbody>'),
 			$duplicateRow = $('<tr></tr>'),
 			$duplicateItem = $('<th colspan="' + (maxFieldCount + 1) + '"></th>'),
+			$duplicateIdRow = $('<tr></tr>'),
+			$duplicateIds = $('<td colspan="' + (maxFieldCount + 1) + '"></td>'),
 			$separator = $('<tr><td colspan="' + (maxFieldCount + 1) + '">&nbsp;</td></tr>'),
 			i;
 
@@ -81,6 +88,9 @@ $(function () {
 			$duplicateItem.text(address + ' (' + duplicate.length + ')');
 			$duplicateRow.append($duplicateItem);
 			$duplicate.append($duplicateRow);
+			$duplicateIds.text('ID: ' + getIds(duplicate).join(', '));
+			$duplicateIdRow.append($duplicateIds);
+			$duplicate.append($duplicateIdRow);
 			for (i = 0; i < duplicate.length; i++) {
 				$duplicate.append(renderDuplicateEntries(duplicate[i]));
 			}
