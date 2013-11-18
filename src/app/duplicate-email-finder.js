@@ -17,6 +17,32 @@ var duplicateEmails = (function() {
 			}
 			return duplicates;
 		},
+		_getSortable: function (duplicates, sort) {
+			var	sortable = [],
+				duplicateAddresses = Object.keys(duplicates),
+				address,
+				i;
+			for (i = 0; i < duplicateAddresses.length; i++) {
+				address = duplicateAddresses[i];
+				sortable.push([address, duplicates[address].length]);
+			}
+			sortable.sort(sort);
+			return sortable;
+		},
+		getIndexByCountDesc: function (duplicates) {
+			var index = [],
+				sortable = this._getSortable(duplicates, function (a, b) { return b[1] - a[1]}),
+				i;
+			for (i = 0; i < sortable.length; i++) {
+				index.push(sortable[i][0]);
+			}
+			return index;
+		},
+		getIndexByName: function (duplicates) {
+			var addressIndex = Object.keys(duplicates);
+			addressIndex.sort();
+			return addressIndex;
+		},
 		parseInputText: function (inputText) {
 			var inputTextLines = this.splitInputText(inputText),
 				entries = [],

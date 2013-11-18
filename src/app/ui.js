@@ -4,17 +4,19 @@ $(function () {
 	$('#parse-data').click(function () {
 		var inputText = $('#source-data').val(),
 			duplicates = duplicateEmails.find(inputText),
+			indexByDuplicateCount = duplicateEmails.getIndexByCountDesc(duplicates),
+			indexByName = duplicateEmails.getIndexByName(duplicates),
 			duplicateCount = 0,
 			uniqueCount = 0,
 			maxFieldCount = getFieldCount(duplicates);
-		renderDuplicates(duplicates, maxFieldCount, $('#duplicate-output'), function matchDuplicateOnly(duplicate) {
+		renderDuplicates(duplicates, indexByDuplicateCount, maxFieldCount, $('#duplicate-output'), function matchDuplicateOnly(duplicate) {
 			if (duplicate.length > 1) {
 				duplicateCount++;
 				return true;
 			}
 			return false;
 		});
-		renderDuplicates(duplicates, maxFieldCount, $('#unique-output'), function matchUniqueOnly(duplicate) {
+		renderDuplicates(duplicates, indexByName, maxFieldCount, $('#unique-output'), function matchUniqueOnly(duplicate) {
 			if (duplicate.length == 1) {
 				uniqueCount++;
 				return true;
@@ -51,15 +53,14 @@ $(function () {
 		return maxFieldCount;
 	}
 
-	function renderDuplicates(duplicates, maxFieldCount, $output, matcher) {
+	function renderDuplicates(duplicates, addressIndex, maxFieldCount, $output, matcher) {
 		$output.empty();
-		var duplicateAddresses = Object.keys(duplicates),
-			$duplicates = $('<table></table>'),
+		var $duplicates = $('<table></table>'),
 			address,
 			i;
 
-		for (i = 0; i < duplicateAddresses.length; i++) {
-			address = duplicateAddresses[i];
+		for (i = 0; i < addressIndex.length; i++) {
+			address = addressIndex[i];
 			if (matcher(duplicates[address])) {
 				$duplicates.append(renderDuplicate(address, duplicates[address], maxFieldCount));
 			}

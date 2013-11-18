@@ -208,15 +208,20 @@ describe('Input parser', function () {
 describe('Duplicate email finder', function () {
 	'use strict';
 	var testAddress = 'test@example.com',
+		differentAddress ='different@example.com',
+		anotherAddress ='another@example.com',
 		inputText =
+			' different+test@example.com	field-d1	field-d2\n' +
+			' different+test2@example.com	field-e1	field-e2\n' +
 			'        test@example.com	field-a1	field-a2 \n' +
 			't.est@example.com	field-b1	field-b2 \n' +
 			' tes.t+other@example.com	field-c1	field-c2  \n' +
-			' different+test@example.com	field-d1	field-d2';
+			' a.n.o.t.h.e.r@example.com	field-f1	field-f2  \n';
+
 
 	it('Finds duplicates', function () {
 		var duplicates = duplicateEmails.find(inputText);
-		expect(Object.keys(duplicates).length).toBe(2);
+		expect(Object.keys(duplicates).length).toBe(3);
 		expect(duplicates[testAddress].length).toBe(3);
 		expect(duplicates[testAddress][0].address.filtered).toBe(testAddress);
 		expect(duplicates[testAddress][0].address.original).toBe('test@example.com');
@@ -224,5 +229,21 @@ describe('Duplicate email finder', function () {
 		expect(duplicates[testAddress][1].address.original).toBe('t.est@example.com');
 		expect(duplicates[testAddress][2].address.filtered).toBe(testAddress);
 		expect(duplicates[testAddress][2].address.original).toBe('tes.t+other@example.com');
+	});
+
+	it('Orders by duplicate count', function () {
+		var duplicates = duplicateEmails.find(inputText),
+			addressIndex = duplicateEmails.getIndexByCountDesc(duplicates);
+		expect(addressIndex[0]).toBe(testAddress);
+		expect(addressIndex[1]).toBe(differentAddress);
+		expect(addressIndex[2]).toBe(anotherAddress);
+	});
+
+	it('Orders by name', function () {
+		var duplicates = duplicateEmails.find(inputText),
+			addressIndex = duplicateEmails.getIndexByName(duplicates);
+		expect(addressIndex[0]).toBe(anotherAddress);
+		expect(addressIndex[1]).toBe(differentAddress);
+		expect(addressIndex[2]).toBe(testAddress);
 	});
 });
