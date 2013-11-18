@@ -3,16 +3,17 @@ $(function () {
 
 	$('#parse-data').click(function () {
 		var inputText = $('#source-data').val(),
+			duplicates = duplicateEmails.find(inputText),
 			duplicateCount = 0,
 			uniqueCount = 0;
-		renderDuplicates(inputText, $('#duplicate-output'), function matchDuplicateOnly(duplicate) {
+		renderDuplicates(duplicates, $('#duplicate-output'), function matchDuplicateOnly(duplicate) {
 			if (duplicate.length > 1) {
 				duplicateCount++;
 				return true;
 			}
 			return false;
 		});
-		renderDuplicates(inputText, $('#unique-output'), function matchUniqueOnly(duplicate) {
+		renderDuplicates(duplicates, $('#unique-output'), function matchUniqueOnly(duplicate) {
 			if (duplicate.length == 1) {
 				uniqueCount++;
 				return true;
@@ -23,34 +24,35 @@ $(function () {
 		$('#unique-count').text(uniqueCount);
 	});
 
-	function renderDuplicates(inputText, $output, matcher) {
+	function renderDuplicates(duplicates, $output, matcher) {
 		$output.empty();
-		var duplicates = duplicateEmails.find(inputText),
-			duplicateAddresses = Object.keys(duplicates),
-			$duplicatesList = $('<ul></ul>'),
+		var duplicateAddresses = Object.keys(duplicates),
+			$duplicates = $('<table></table>'),
 			address,
 			i;
 
 		for (i = 0; i < duplicateAddresses.length; i++) {
 			address = duplicateAddresses[i];
 			if (matcher(duplicates[address])) {
-				$duplicatesList.append(renderDuplicate(address, duplicates[address]));
+				$duplicates.append(renderDuplicate(address, duplicates[address]));
 			}
 		}
-		$output.append($duplicatesList);
+		$output.append($duplicates);
 	}
 
 	function renderDuplicate(address, duplicate) {
-		var $duplicateListItem = $('<li></li>'),
-			$duplicateEntries = $('<table></table>'),
+		var $duplicate = $('<tbody></tbody>'),
+			$duplicateRow = $('<tr></tr>'),
+			$duplicateItem = $('<th></th>'),
 			i;
 
-		$duplicateListItem.text(address + ' (' + duplicate.length + ')');
+		$duplicateItem.text(address + ' (' + duplicate.length + ')');
+		$duplicateRow.append($duplicateItem);
+		$duplicate.append($duplicateRow);
 		for (i = 0; i < duplicate.length; i++) {
-			$duplicateEntries.append(renderDuplicateEntries(duplicate[i]));
+			$duplicate.append(renderDuplicateEntries(duplicate[i]));
 		}
-		$duplicateListItem.append($duplicateEntries);
-		return $duplicateListItem;
+		return $duplicate;
 	}
 
 	function renderDuplicateEntries(duplicateEntries) {
