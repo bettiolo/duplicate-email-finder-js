@@ -5,14 +5,14 @@ $(function () {
 		var inputText = $('#source-data').val(),
 			duplicateCount = 0,
 			uniqueCount = 0;
-		findDuplicates(inputText, $('#duplicate-output'), function matchDuplicateOnly(duplicate) {
+		renderDuplicates(inputText, $('#duplicate-output'), function matchDuplicateOnly(duplicate) {
 			if (duplicate.length > 1) {
 				duplicateCount++;
 				return true;
 			}
 			return false;
 		});
-		findDuplicates(inputText, $('#unique-output'), function matchUniqueOnly(duplicate) {
+		renderDuplicates(inputText, $('#unique-output'), function matchUniqueOnly(duplicate) {
 			if (duplicate.length == 1) {
 				uniqueCount++;
 				return true;
@@ -23,7 +23,7 @@ $(function () {
 		$('#unique-count').text(uniqueCount);
 	});
 
-	function findDuplicates(inputText, $output, matcher) {
+	function renderDuplicates(inputText, $output, matcher) {
 		$output.empty();
 		var duplicates = duplicateEmails.find(inputText),
 			duplicateAddresses = Object.keys(duplicates),
@@ -34,44 +34,41 @@ $(function () {
 		for (i = 0; i < duplicateAddresses.length; i++) {
 			address = duplicateAddresses[i];
 			if (matcher(duplicates[address])) {
-				$duplicatesList.append(getDuplicateOutputElement(address, duplicates[address]));
+				$duplicatesList.append(renderDuplicate(address, duplicates[address]));
 			}
 		}
-
 		$output.append($duplicatesList);
 	}
 
-	function getDuplicateOutputElement(address, duplicate) {
+	function renderDuplicate(address, duplicate) {
 		var $duplicateListItem = $('<li></li>'),
 			$duplicateEntries = $('<table></table>'),
-			$duplicateEntry,
-			$addressCell,
 			i;
+
 		$duplicateListItem.text(address + ' (' + duplicate.length + ')');
-		if (duplicate) {
-			for (i = 0; i < duplicate.length; i++) {
-				$duplicateEntry = $('<tr></tr>');
-				$addressCell = $('<td></td>');
-				$addressCell.text(duplicate[i].address.original);
-				$duplicateEntry.append($addressCell);
-				renderDuplicateEntries($duplicateEntry, duplicate[i]);
-				$duplicateEntries.append($duplicateEntry);
-			}
+		for (i = 0; i < duplicate.length; i++) {
+			$duplicateEntries.append(renderDuplicateEntries(duplicate[i]));
 		}
 		$duplicateListItem.append($duplicateEntries);
 		return $duplicateListItem;
 	}
 
-	function renderDuplicateEntries($duplicateEntry, duplicateEntries) {
-		var $fieldCell,
+	function renderDuplicateEntries(duplicateEntries) {
+		var $duplicateEntry = $('<tr></tr>'),
+			$addressCell = $('<td></td>'),
+			$fieldCell,
 			field,
 			i;
+
+		$addressCell.text(duplicateEntries.address.original);
+		$duplicateEntry.append($addressCell);
 		for (i = 0; i < duplicateEntries.fields.length; i++) {
 			field = duplicateEntries.fields[i];
 			$fieldCell = $('<td></td>');
 			$fieldCell.text(field);
 			$duplicateEntry.append($fieldCell);
 		}
+		return $duplicateEntry;
 	}
 
 });
