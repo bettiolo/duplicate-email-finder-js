@@ -1,4 +1,4 @@
-describe('Address parser', function (){
+describe('Address parser', function () {
 	'use strict';
 	var testAddress = 'test@example.com';
 
@@ -208,8 +208,8 @@ describe('Input parser', function () {
 describe('Duplicate email finder', function () {
 	'use strict';
 	var testAddress = 'test@example.com',
-		differentAddress ='different@example.com',
-		anotherAddress ='another@example.com',
+		differentAddress = 'different@example.com',
+		anotherAddress = 'another@example.com',
 		inputText =
 			' different+test@example.com	field-d1	field-d2\n' +
 			' different+test2@example.com	field-e1	field-e2\n' +
