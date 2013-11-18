@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Duplicate email finder</title>
+</head>
+<body>
+
+<p>
+    <label for="source-data">Data to parse (format: email@example.com[TAB|SPACE]field1[TAB|SPACE]field2)</label>
+    <br/>
+    <textarea id="source-data" style="width: 40em; height: 30em;">
+        email@example.com	field-a1	field-a2
+        e.mail@example.com	field-b1	field-b2
+        emai.l+test@example.com	field-c1	field-c2
+        different+test@example.com	field-d1	field-d2
+    </textarea>
+    <br/>
+    <button id="parse-data">Find duplicates</button>
+</p>
+
+<p id="output">
+
+</p>
+
+<script type="text/javascript" src="lib/zepto.js"></script>
+<script type="text/javascript" src="app/duplicate-email-finder.js"></script>
+<script type="text/javascript" src="app/ui.js"></script>
+</body>
+</html>
